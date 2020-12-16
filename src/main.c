@@ -1,4 +1,5 @@
 #include "Flash.h"
+#include "Serial.h"
 #include "Keypad.h"
 #include "led.h"
 #include "AudioPWM.h"
