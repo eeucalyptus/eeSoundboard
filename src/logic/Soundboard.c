@@ -8,10 +8,11 @@
 
 #include "Soundboard.h"
 #include "Sound.h"
-#include "Flash.h"
-#include "Keypad.h"
-#include "AudioPWM.h"
-#include "Power.h"
+
+#include <hw/Flash.h>
+#include <hw/Keypad.h>
+#include <hw/AudioPWM.h>
+#include <hw/Power.h>
 
 #include <stdbool.h>
 #include <stdint.h>

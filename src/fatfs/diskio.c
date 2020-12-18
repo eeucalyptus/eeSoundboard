@@ -1,7 +1,7 @@
 #include "ff.h"
 #include "diskio.h"
 
-#include "../Flash.h"
+#include <hw/Flash.h>
 
 
 DSTATUS disk_status (BYTE pdrv)

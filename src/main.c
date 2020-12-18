@@ -1,12 +1,12 @@
-#include "Flash.h"
-#include "Serial.h"
-#include "Keypad.h"
-#include "led.h"
-#include "AudioPWM.h"
-#include "Soundboard.h"
-#include "util/clock.h"
-#include "USB_MSC.h"
-#include "fatfs/ff.h"
+#include <hw/Flash.h>
+#include <hw/Serial.h>
+#include <hw/Keypad.h>
+#include <hw/led.h>
+#include <hw/AudioPWM.h>
+#include <logic/Soundboard.h>
+#include <hw/clock.h>
+#include <hw/USB_MSC.h>
+#include <fatfs/ff.h>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/systick.h>

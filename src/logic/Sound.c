@@ -7,7 +7,8 @@
 
 
 #include "Sound.h"
-#include "Flash.h"
+
+#include <hw/Flash.h>
 
 #include <stdbool.h>
 #include <stdint.h>
