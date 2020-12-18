@@ -5,6 +5,7 @@
 #include "AudioPWM.h"
 #include "Soundboard.h"
 #include "util/clock.h"
+#include "USB_MSC.h"
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/systick.h>
@@ -12,8 +13,15 @@
 #include <stdint.h>
 
 int main()
+//{
+//	Clock_Init();
+//	Flash_Init();
+//	USB_MSC_Init();
+//	while(1) {
+//		USB_MSC_Poll();
+//	}
+//}
 {
-
 	Clock_Init();
 	Led_Init();
 	Flash_Init();

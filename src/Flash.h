@@ -101,7 +101,7 @@ void Flash_StopReadStatus(void);
  * @param n The index of the memory chip (for chip selection)
  * @param address The address of one byte within the block (usually the first byte)
  */
-void Flash_Erase64k(uint32_t address);
+void Flash_Erase4k(uint32_t address);
 
 /**
  * Erase a whole memory chip.

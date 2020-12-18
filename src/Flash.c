@@ -68,14 +68,14 @@ void Flash_StopReadStatus() {
 	Flash_CS_High();
 }
 
-void Flash_Erase64k(uint32_t address) {
+void Flash_Erase4k(uint32_t address) {
 	bool done = false;
 	uint8_t status;
 
 	Flash_WriteEnable();
 
 	Flash_CS_Low();
-	Flash_SendRecv(0xD8);
+	Flash_SendRecv(0x20);
 	Flash_SendRecv((address >> 16) & 0xff);
 	Flash_SendRecv((address >>  8) & 0xff);
 	Flash_SendRecv((address >>  0) & 0xff);
@@ -148,9 +148,9 @@ void Flash_ReadID(uint8_t *manufacturer, uint16_t *device) {
 void Flash_StartRead(uint32_t address) {
 	Flash_CS_Low();
 	Flash_SendRecv(0x03);
-	Flash_SendRecv((address >> 0) & 0xff);
-	Flash_SendRecv((address >> 8) & 0xff);
 	Flash_SendRecv((address >> 16) & 0xff);
+	Flash_SendRecv((address >> 8) & 0xff);
+	Flash_SendRecv((address >> 0) & 0xff);
 }
 
 uint8_t Flash_Read() {
