@@ -25,6 +25,8 @@
 static int AudioPWM_SubSampleCount = 0;
 static bool AudioPWM_SamplingEnabled = true;
 
+static volatile uint32_t AudioPWM_SampleMissingCount;
+
 uint16_t AudioPWM_Buffer = 0;
 volatile bool AudioPWM_BufferFull = false;
 
@@ -82,18 +84,18 @@ void tim1_up_tim10_isr() {
 		AudioPWM_SubSampleCount = 0;
 		if(AudioPWM_SamplingEnabled) {
 			// Check for missing samples
-//			if(AudioPWM_BufferFull) {
-				// Set PWM compare value
+			if(AudioPWM_BufferFull) {
+//				 Set PWM compare value
 				timer_set_oc_value(TIM1, TIM_OC2, AudioPWM_Buffer);
 //				TIM_SetCompare1(TIM1, AudioPWM_Buffer);
 
 				// Reset buffer
 				AudioPWM_BufferFull = false;
-//			}
-//			else
-//			{
-//				AudioPWM_SampleMissingCount++;
-//			}
+			}
+			else
+			{
+				AudioPWM_SampleMissingCount++;
+			}
 
 		}
 	}

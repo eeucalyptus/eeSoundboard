@@ -13,6 +13,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 uint32_t Sound_SamplesLeft;
 
@@ -26,7 +27,13 @@ void Sound_Start(int n) {
 		f_mount(&fs, "", 0);
 	}
 
-	f_open(&currentSound, "data.wav", FA_READ);
+	char filename[13];
+	strcpy(filename, "sound_00.wav");
+
+	filename[6] += (n+1)/10;
+	filename[7] += (n+1)%10;
+
+	f_open(&currentSound, filename, FA_READ);
 
 	// TODO check RIFF structure
 
@@ -39,6 +46,7 @@ void Sound_Stop(void) {
 
 bool Sound_GetSample(int16_t *sample) {
 	UINT br;
+	// TODO Consumes too much time. A double or ring buffer is needed!
 	f_read(&currentSound, sample, 2, &br);
 	if(br != 2) {
 		return false;
