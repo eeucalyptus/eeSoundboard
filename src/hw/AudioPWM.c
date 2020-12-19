@@ -18,16 +18,27 @@
 
 // TODO Adjust Period
 #define AUDIOPWM_SAMPLINGRATE (48000)
+#define AUDIOPWM_BUFFERDEPTH (2048)
 #define AUDIOPWM_SUBSAMPLE_COUNT (2)
 #define AUDIOPWM_TIMER_FREQUENCY (rcc_apb2_frequency)
 #define PWM_PERIOD  (AUDIOPWM_TIMER_FREQUENCY / (AUDIOPWM_SAMPLINGRATE * AUDIOPWM_SUBSAMPLE_COUNT))
 
+#define AUDIOPWM_BUFFER_FULL() (\
+			(AudioPWM_BufferWritePos == AudioPWM_BufferReadPos-1) || \
+			(AudioPWM_BufferWritePos == AUDIOPWM_BUFFERDEPTH-1 && AudioPWM_BufferReadPos==0))
+
+#define AUDIOPWM_BUFFER_EMPTY() (AudioPWM_BufferWritePos == AudioPWM_BufferReadPos)
+
+
 static int AudioPWM_SubSampleCount = 0;
 static bool AudioPWM_SamplingEnabled = true;
 
+static int AudioPWM_BufferReadPos;
+static int AudioPWM_BufferWritePos;
+
 static volatile uint32_t AudioPWM_SampleMissingCount;
 
-uint16_t AudioPWM_Buffer = 0;
+uint16_t AudioPWM_Buffer[AUDIOPWM_BUFFERDEPTH];
 volatile bool AudioPWM_BufferFull = false;
 
 void AudioPWM_Init() {
@@ -66,6 +77,24 @@ void AudioPWM_Init() {
 	nvic_enable_irq(NVIC_TIM1_UP_TIM10_IRQ);
 }
 
+void AudioPWM_Buffer_Put(uint16_t x) {
+	while(AUDIOPWM_BUFFER_FULL()) {
+		asm volatile("nop");
+	}
+	AudioPWM_Buffer[AudioPWM_BufferWritePos] = x;
+	if(++AudioPWM_BufferWritePos >= AUDIOPWM_BUFFERDEPTH) {
+		AudioPWM_BufferWritePos = 0;
+	}}
+
+uint16_t AudioPWM_Buffer_Take() {
+	while(AUDIOPWM_BUFFER_EMPTY());
+	uint16_t x = AudioPWM_Buffer[AudioPWM_BufferReadPos];
+	if(++AudioPWM_BufferReadPos >= AUDIOPWM_BUFFERDEPTH) {
+		AudioPWM_BufferReadPos = 0;
+	}
+	return x;
+}
+
 void AudioPWM_EnableSampling(bool enabled) {
 	if(enabled) {
 		timer_enable_counter(TIM1);
@@ -84,13 +113,9 @@ void tim1_up_tim10_isr() {
 		AudioPWM_SubSampleCount = 0;
 		if(AudioPWM_SamplingEnabled) {
 			// Check for missing samples
-			if(AudioPWM_BufferFull) {
-//				 Set PWM compare value
-				timer_set_oc_value(TIM1, TIM_OC2, AudioPWM_Buffer);
-//				TIM_SetCompare1(TIM1, AudioPWM_Buffer);
-
-				// Reset buffer
-				AudioPWM_BufferFull = false;
+			if(!AUDIOPWM_BUFFER_EMPTY()) {
+				// Set PWM compare value
+				timer_set_oc_value(TIM1, TIM_OC2, AudioPWM_Buffer_Take());
 			}
 			else
 			{
@@ -108,7 +133,13 @@ uint16_t AudioPWM_ScaleAndConvert(int16_t signedSample) {
 }
 
 void AudioPWM_Sample(int16_t sample) {
-	while(AudioPWM_BufferFull);
-	AudioPWM_Buffer = AudioPWM_ScaleAndConvert(sample);
-	AudioPWM_BufferFull = true;
+	AudioPWM_Buffer_Put(AudioPWM_ScaleAndConvert(sample));
+}
+
+void AudioPWM_Wait() {
+	while(!AUDIOPWM_BUFFER_EMPTY());
+}
+
+void AudioPWM_ResetBuffer() {
+	AudioPWM_BufferWritePos = AudioPWM_BufferReadPos;
 }

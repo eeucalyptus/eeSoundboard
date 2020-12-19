@@ -28,10 +28,14 @@ void AudioPWM_Sample(int16_t nextSample);
 void AudioPWM_EnableSampling(bool enabled);
 
 /**
- * User defined. This function will be called to signal that the last
- * value has been sampled. AudioPWM_Sample has to be called within 1/8kHz.
+ * Wait until buffer emptied. Used to synchronize with playback.
  */
-extern void AudioPWM_NeedSampleCallback(void);
+void AudioPWM_Wait(void);
+
+/**
+ * Reset buffer to play new samples immediately
+ */
+void AudioPWM_ResetBuffer(void);
 
 
 #endif /* AudioPWM_H_ */

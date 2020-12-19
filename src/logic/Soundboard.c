@@ -33,7 +33,7 @@ void Soundboard_StartSound(int sound) {
 	Soundboard_CurrentPosition = 0;
 	Soundboard_Playing = true;
 	Sound_Start(sound);
-	AudioPWM_EnableSampling(true);
+	AudioPWM_ResetBuffer();
 }
 
 /**
@@ -54,6 +54,7 @@ bool Soundboard_ContinueSound(void) {
 		int16_t sample;
 		Soundboard_Playing = Sound_GetSample(&sample);
 		AudioPWM_Sample(sample);
+		AudioPWM_EnableSampling(true);
 		return true;
 	}
 	else {
@@ -74,6 +75,7 @@ void Soundboard_Run() {
 			// Start, continue and stop sound
 			Soundboard_StartSound(Soundboard_LastKeyPressed);
 			while(Soundboard_ContinueSound());
+			AudioPWM_Wait();
 			Soundboard_StopSound();
 			sleep(1);
 		}
