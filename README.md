@@ -17,3 +17,11 @@ Building is only possible via eclipse at the moment. I consider adding cmake sup
 ## Running 
 
 Either use an ST-Link to flash the firmware or trigger the DFU-Mode and use `dfu-util -a 0 -s 0x08000000 -R -D Debug/Soundboard.bin`.
+
+## 3rd-Party
+
+eeSoundboard is licensed under the terms of the MIT license (see license file). The firmware uses some 3rd-party code. Other licenses may apply here:
+
+- libopencm3 - licensed under the terms of the LGPL (verson ?)
+- FatFs - has a BSD-Style license without the need for attribution in non-opensource software (weeeeird)
+- opus (OMG, you're not supposed to see this yet! Anyway, it's BSD licensed)
