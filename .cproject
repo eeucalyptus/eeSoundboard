@@ -181,7 +181,15 @@
                             							
                             <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.archiver.2085697358" name="GNU ARM Cross Archiver" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.archiver"/>
                             							
-                            <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.createflash.555775943" name="GNU ARM Cross Create Flash Image" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.createflash"/>
+                            <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.createflash.555775943" name="GNU ARM Cross Create Flash Image" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.createflash">
+                                								
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.createflash.choice.1704139080" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.createflash.choice" useByScannerDiscovery="false" value="ilg.gnuarmeclipse.managedbuild.cross.option.createflash.choice.binary" valueType="enumerated"/>
+                                								
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.createflash.textsection.498160150" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.createflash.textsection" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                								
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.createflash.datasection.16494362" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.createflash.datasection" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                							
+                            </tool>
                             							
                             <tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.createlisting.592383588" name="GNU ARM Cross Create Listing" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.createlisting">
                                 								
