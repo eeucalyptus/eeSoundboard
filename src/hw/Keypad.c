@@ -33,8 +33,8 @@ Keypad_Gpio_t Keypad_RowPins[4] = {
  */
 Keypad_Gpio_t Keypad_ColPins[4] = {
 		{.Port = GPIOA, .Pin = 15},
-		{.Port = GPIOA, .Pin = 12},
-		{.Port = GPIOA, .Pin = 11},
+		{.Port = GPIOB, .Pin = 3},
+		{.Port = GPIOA, .Pin = 9},
 		{.Port = GPIOA, .Pin = 10},
 };
 
