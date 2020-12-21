@@ -6,6 +6,7 @@
  */
 
 #include "AudioPWM.h"
+#include "Power.h"
 
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/rcc.h>
@@ -19,7 +20,7 @@
 // TODO Adjust Period
 #define AUDIOPWM_SAMPLINGRATE (48000)
 #define AUDIOPWM_BUFFERDEPTH (2048)
-#define AUDIOPWM_SUBSAMPLE_COUNT (2)
+#define AUDIOPWM_SUBSAMPLE_COUNT (3)
 #define AUDIOPWM_TIMER_FREQUENCY (rcc_apb2_frequency)
 #define PWM_PERIOD  (AUDIOPWM_TIMER_FREQUENCY / (AUDIOPWM_SAMPLINGRATE * AUDIOPWM_SUBSAMPLE_COUNT))
 
@@ -50,9 +51,9 @@ void AudioPWM_Init() {
 	*(uint32_t *)(0xE004200C) = 0x1;
 
 	// Init audio GPIO
-	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, 1 << 14);
-	gpio_set_output_options(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, 1 << 14);
-	gpio_set_af(GPIOB, GPIO_AF1, 1 << 14);
+	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, 1 << 13);
+	gpio_set_output_options(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, 1 << 13);
+	gpio_set_af(GPIOB, GPIO_AF1, 1 << 13);
 
 	// GND-Level for voltage divider
 	gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, 1 << 15);
@@ -64,12 +65,12 @@ void AudioPWM_Init() {
 	timer_set_prescaler(TIM1, 0);
 	timer_set_period(TIM1, PWM_PERIOD);
 
-	timer_set_oc_polarity_high(TIM1, TIM_OC2N);
-	timer_set_oc_idle_state_set(TIM1, TIM_OC2N);
+	timer_set_oc_polarity_high(TIM1, TIM_OC1N);
+	timer_set_oc_idle_state_set(TIM1, TIM_OC1N);
 
-	timer_set_oc_mode(TIM1, TIM_OC2, TIM_OCM_PWM1);
-	timer_set_oc_value(TIM1, TIM_OC2, PWM_PERIOD/2);
-	timer_enable_oc_output(TIM1, TIM_OC2N);
+	timer_set_oc_mode(TIM1, TIM_OC1, TIM_OCM_PWM1);
+	timer_set_oc_value(TIM1, TIM_OC1, PWM_PERIOD/2);
+	timer_enable_oc_output(TIM1, TIM_OC1N);
 
 	timer_enable_break_main_output(TIM1);
 
@@ -96,6 +97,8 @@ uint16_t AudioPWM_Buffer_Take() {
 }
 
 void AudioPWM_EnableSampling(bool enabled) {
+	Power_EnableAmplifier(enabled);
+
 	if(enabled) {
 		timer_enable_counter(TIM1);
 	}
@@ -115,7 +118,7 @@ void tim1_up_tim10_isr() {
 			// Check for missing samples
 			if(!AUDIOPWM_BUFFER_EMPTY()) {
 				// Set PWM compare value
-				timer_set_oc_value(TIM1, TIM_OC2, AudioPWM_Buffer_Take());
+				timer_set_oc_value(TIM1, TIM_OC1, AudioPWM_Buffer_Take());
 			}
 			else
 			{

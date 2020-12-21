@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+void Power_Init(void);
 /**
  * Save power and wait for user input
  */
