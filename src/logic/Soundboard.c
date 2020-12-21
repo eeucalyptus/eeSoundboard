@@ -83,5 +83,7 @@ void Soundboard_Run() {
 			// Save power until key is pressed
 			Power_Standby();
 		}
+
+		USB_MSC_Poll();
 	}
 }

@@ -18,7 +18,7 @@ int main()
 	Clock_Init();
 	Led_Init();
 	Flash_Init();
-
+	USB_MSC_Init();
 	AudioPWM_Init();
 	Keypad_Init();
 
