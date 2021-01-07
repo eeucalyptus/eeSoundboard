@@ -51,6 +51,9 @@ bool Soundboard_ContinueSound(void) {
 
 	// Check if sound is continuing
 	if(Soundboard_Playing) {
+		// TODO there is one undefined sample added because
+		// Soundboard_Playing is checked in the next cycle instead
+		// of immediately
 		int16_t sample;
 		Soundboard_Playing = Sound_GetSample(&sample);
 		AudioPWM_Sample(sample);

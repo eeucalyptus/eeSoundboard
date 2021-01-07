@@ -11,6 +11,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef enum {
+	SOUND_RIFFWAVE,
+	SOUND_OGGOPUS,
+} Sound_Type_t;
+
 /**
  * Start reading a sound from flash memory.
  * @param n index of the sound
@@ -30,6 +35,9 @@ void Sound_Stop(void);
  * @return false if the sound has ended, true if not
  */
 bool Sound_GetSample(int16_t *sample);
+
+uint32_t Sound_ReadCurrentFile(uint8_t *buffer, uint32_t size);
+void Sound_LseekCurrentFile(uint32_t offset);
 
 
 #endif /* SRC_SOUND_H_ */
