@@ -92,10 +92,7 @@ static const char *usb_strings[] = {
 };
 
 extern int USB_MSC_Flash_read(uint32_t lba, uint8_t *copy_to) {
-	if(lba == 128) {
-		asm volatile("nop");
-	}
-	Flash_StartRead(lba*512);
+	Flash_StartRead(lba*4096);
 	for(int i=0; i<512; i++) {
 		*(copy_to++) = Flash_Read();
 	}
@@ -103,19 +100,18 @@ extern int USB_MSC_Flash_read(uint32_t lba, uint8_t *copy_to) {
 }
 
 extern int USB_MSC_Flash_write(uint32_t lba, const uint8_t *copy_from) {
-	if(lba == 128) {
-		asm volatile("nop");
-	}
-	if((lba & 0x07) == 0) {
-		Flash_Erase4k(lba*512);
-	}
-	Flash_StartProgramPage(lba*512);
+	Led_StatusLed_Toggle();
+	Flash_Erase4k(lba*4096);
+
+	// Program first 256 bytes
+	Flash_StartProgramPage(lba*4096);
 	for(int i = 0; i < 256; i++) {
 		Flash_ProgramPage(*(copy_from++));
 	}
 	Flash_StopProgramPage();
 
-	Flash_StartProgramPage(lba*512+256);
+	// Program following 256 bytes
+	Flash_StartProgramPage(lba*4096+256);
 	for(int i = 0; i < 256; i++) {
 		Flash_ProgramPage(*(copy_from++));
 	}
@@ -123,7 +119,7 @@ extern int USB_MSC_Flash_write(uint32_t lba, const uint8_t *copy_from) {
 }
 
 extern int USB_MSC_Flash_blocks(void) {
-	return 8192;
+	return 1024;
 }
 
 void USB_MSC_Init(void) {

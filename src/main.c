@@ -28,7 +28,7 @@ int main()
 	Keypad_Init();
 	OggOpus_Init();
 
-	//Flash_EraseChip();
+//	Flash_EraseChip();
 
 	for(int i = 0; i<1000000; i++);
 
