@@ -39,14 +39,25 @@ void Sound_Start(int n) {
 
 	// TODO Open either wav or opus file
 
-	char filename[14];
-	strcpy(filename, "sound_00.opus");
+	char filename[13];
+	strcpy(filename, "sound_00.ogg");
 	Sound_CurrentType = SOUND_OGGOPUS;
 
 	filename[6] += (n+1)/10;
 	filename[7] += (n+1)%10;
 
-	volatile FRESULT res = f_open(&Sound_CurrentFile, "sound_01.ogg", FA_READ);
+	volatile FRESULT res = f_open(&Sound_CurrentFile, filename, FA_READ);
+
+	if(res != FR_OK) {
+		filename[9] = 'w';
+		filename[10] = 'a';
+		filename[11] = 'v';
+
+		res = f_open(&Sound_CurrentFile, filename, FA_READ);
+		Sound_CurrentType = SOUND_RIFFWAVE;
+	}
+
+	// TODO error handling if res != FR_OK
 
 	switch(Sound_CurrentType) {
 	case SOUND_RIFFWAVE:

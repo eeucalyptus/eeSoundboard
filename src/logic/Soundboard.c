@@ -13,15 +13,17 @@
 #include <hw/Keypad.h>
 #include <hw/AudioPWM.h>
 #include <hw/Power.h>
+#include <hw/USB_MSC.h>
+#include <hw/Stopwatch.h>
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <unistd.h>
 
 
 int Soundboard_LastKeyPressed = -1;
 
 int Soundboard_CurrentSound;
-uint32_t Soundboard_CurrentPosition;
 bool Soundboard_Playing = false;
 
 /**
@@ -30,7 +32,6 @@ bool Soundboard_Playing = false;
  */
 void Soundboard_StartSound(int sound) {
 	Soundboard_CurrentSound = sound;
-	Soundboard_CurrentPosition = 0;
 	Soundboard_Playing = true;
 	Sound_Start(sound);
 	AudioPWM_ResetBuffer();

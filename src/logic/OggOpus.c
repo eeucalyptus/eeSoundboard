@@ -37,7 +37,8 @@ void OggOpus_Init() {
 		// Check the Opus decoder size and adjust to match opus_decoder_get_size(1)
 		while(1);
 	}
-	int status = opus_decoder_init(OggOpus_OpusDecoder, 48000, 1);
+
+	int ogg_status = opus_decoder_init(OggOpus_OpusDecoder, 48000, 1);
 }
 
 
@@ -147,19 +148,18 @@ Ogg_Status_t OggOpus_ParseFirstPages(int *preskip) {
 Ogg_Status_t OggOpus_ReadPacket(uint8_t *packet, int *size) {
 	// It is assumed that each Ogg segment contains EXACTLY one opus packet.
 	// We exploit that behaviour of most muxers for low bit rates.
-	// Don't do this at home, kids! Use a propper repacketizer!
+	// Don't do this at home, kids! Use a proper repacketizer!
 
 	if(OggOpus_CurrentSegment >= OggOpus_SegmentTableSize) {
-		// TODO load new page
 		ogg_page_header_t header;
 		int status = OggOpus_ReadHeader(&header, OggOpus_SegmentTable);
-		OggOpus_CurrentSegment = 0;
-		OggOpus_SegmentTableSize = header.page_segments;
-
-		// TODO return OGG_EOS if no next page available
 		if(status == OGG_EOS) {
 			return OGG_EOS;
 		}
+
+		OggOpus_CurrentSegment = 0;
+		OggOpus_SegmentTableSize = header.page_segments;
+
 	}
 
 	*size = OggOpus_SegmentTable[OggOpus_CurrentSegment];
@@ -182,13 +182,14 @@ Ogg_Status_t OggOpus_NextPacket() {
 void OggOpus_StartSound() {
 	int preskip;
 	int status = OggOpus_ParseFirstPages(&preskip);
+	OggOpus_CurrentBufferLength = 0;
 
 	if(status != OGG_OK)
 	{
 		return;
 	}
 
-	while(preskip-- > 0) {
+	while(preskip-- >= 0) {
 		int16_t drop_sample;
 		OggOpus_GetSample(&drop_sample);
 	}
@@ -201,7 +202,7 @@ bool OggOpus_GetSample(int16_t *sample) {
 			return false;
 		}
 	}
-	sample = OggOpus_CurrentBuffer[OggOpus_CurrentBufferPos];
+	*sample = OggOpus_CurrentBuffer[OggOpus_CurrentBufferPos];
 	OggOpus_CurrentBufferPos++;
 
 	return true;

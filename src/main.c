@@ -6,6 +6,7 @@
 #include <logic/Soundboard.h>
 #include <hw/clock.h>
 #include <hw/USB_MSC.h>
+#include <hw/Stopwatch.h>
 
 #include <logic/OggOpus.h>
 #include <logic/Sound.h>
@@ -33,7 +34,7 @@ int main()
 	for(int i = 0; i<1000000; i++);
 
 	// Run soundboard
-	//Soundboard_Run();
+	Soundboard_Run();
 
 	while(1) {
 		USB_MSC_Poll();
