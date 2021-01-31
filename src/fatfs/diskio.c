@@ -21,7 +21,7 @@ DRESULT disk_read (BYTE pdrv, BYTE *buff, LBA_t sector,	UINT count)
 	// TODO update for 512 B blocksize
 
 	Flash_StartRead(sector*4096);
-	for(int i = 0; i < count*4096; i++) {
+	for(int i = 0; i < count*512; i++) {
 		*(buff++) = Flash_Read();
 	}
 	Flash_StopRead();
