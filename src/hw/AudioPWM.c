@@ -20,7 +20,7 @@
 // TODO Adjust Period
 #define AUDIOPWM_SAMPLINGRATE (48000)
 #define AUDIOPWM_BUFFERDEPTH (2048)
-#define AUDIOPWM_SUBSAMPLE_COUNT (3)
+#define AUDIOPWM_SUBSAMPLE_COUNT (2)
 #define AUDIOPWM_TIMER_FREQUENCY (rcc_apb2_frequency)
 #define PWM_PERIOD  (AUDIOPWM_TIMER_FREQUENCY / (AUDIOPWM_SAMPLINGRATE * AUDIOPWM_SUBSAMPLE_COUNT))
 
@@ -82,14 +82,17 @@ void AudioPWM_Buffer_Put(uint16_t x) {
 	while(AUDIOPWM_BUFFER_FULL()) {
 		asm volatile("nop");
 	}
+
 	AudioPWM_Buffer[AudioPWM_BufferWritePos] = x;
 	if(++AudioPWM_BufferWritePos >= AUDIOPWM_BUFFERDEPTH) {
 		AudioPWM_BufferWritePos = 0;
-	}}
+	}
+}
 
 uint16_t AudioPWM_Buffer_Take() {
 	while(AUDIOPWM_BUFFER_EMPTY());
 	uint16_t x = AudioPWM_Buffer[AudioPWM_BufferReadPos];
+
 	if(++AudioPWM_BufferReadPos >= AUDIOPWM_BUFFERDEPTH) {
 		AudioPWM_BufferReadPos = 0;
 	}
