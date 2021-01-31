@@ -12,6 +12,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <unistd.h>
 
 typedef struct {
 	uint32_t Pin;
@@ -61,6 +62,18 @@ void Keypad_SetActiveCol(int col) {
 	gpio_clear(Keypad_ColPins[Keypad_ActiveCol].Port, 1 << Keypad_ColPins[Keypad_ActiveCol].Pin);
 }
 
+/**
+ * All cols low to quickly detect the presence of a key press
+ */
+void Keypad_SetAllColsActive() {
+	Keypad_ActiveCol = -1;
+
+	// Set all col pins low
+	for(int i = 0; i < 4; i++) {
+		gpio_clear(Keypad_ColPins[i].Port, 1 << Keypad_ColPins[i].Pin);
+	}
+}
+
 
 void Keypad_Init(void) {
 	// Enable GPIO Peripheral clock
@@ -72,9 +85,9 @@ void Keypad_Init(void) {
 	for(int i = 0; i < 4; i++) {
 		gpio_mode_setup(Keypad_RowPins[i].Port, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, 1 << Keypad_RowPins[i].Pin);
 	}
-	// Set all col pins as high
+	// Set all col pins low
 	for(int i = 0; i < 4; i++) {
-		gpio_set(Keypad_ColPins[i].Port, 1 << Keypad_ColPins[i].Pin);
+		gpio_clear(Keypad_ColPins[i].Port, 1 << Keypad_ColPins[i].Pin);
 		gpio_mode_setup(Keypad_ColPins[i].Port, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, 1 << Keypad_ColPins[i].Pin);
 		gpio_set_output_options(Keypad_ColPins[i].Port, GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, 1 << Keypad_ColPins[i].Pin);
 	}
@@ -84,21 +97,39 @@ void Keypad_Init(void) {
 }
 
 int Keypad_GetKey() {
-	for(int col = 0; col <= 3; col++) {
-		// Set active row
-		Keypad_SetActiveCol(col);
-		// active wait for some us
-		for(int i = 0; i<10000; i++);
+	int key = -1;
 
-		// Check all cols
-		for(int row = 0; row < 4; row++) {
-			uint32_t in = gpio_port_read(Keypad_RowPins[row].Port);
-			if((in & (1 << Keypad_RowPins[row].Pin)) == 0) {
-				return row*4+col;
+	// Check if any key is pressed
+	int pressed_row = -1;
+	for(int row = 0; row < 4; row++) {
+		uint32_t in = gpio_port_read(Keypad_RowPins[row].Port);
+		if((in & (1 << Keypad_RowPins[row].Pin)) == 0) {
+			pressed_row = row;
+			break;
+		}
+	}
+
+	if(pressed_row >= 0) {
+		// Check columns
+		for(int col = 0; col <= 3; col++) {
+			// Set active col
+			Keypad_SetActiveCol(col);
+			// active wait for some us
+			usleep(2000);
+
+			// Check row
+			uint32_t in = gpio_port_read(Keypad_RowPins[pressed_row].Port);
+			if((in & (1 << Keypad_RowPins[pressed_row].Pin)) == 0) {
+				key = pressed_row*4+col;
+				break;
 			}
 		}
 	}
-	return -1;
+
+	Keypad_SetAllColsActive();
+
+	// No key pressed
+	return key;
 }
 
 
