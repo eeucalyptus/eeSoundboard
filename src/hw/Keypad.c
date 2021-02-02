@@ -115,7 +115,7 @@ int Keypad_GetKey() {
 			// Set active col
 			Keypad_SetActiveCol(col);
 			// active wait for some us
-			usleep(2000);
+			usleep(2);
 
 			// Check row
 			uint32_t in = gpio_port_read(Keypad_RowPins[pressed_row].Port);
